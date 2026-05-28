@@ -250,7 +250,11 @@ class CatalogService
 
     public function fullCatalogArray($limit, $offset)
     {
-        return $this->repo->getAll([], $limit, $offset);
+        return
+        $this->repo->catalogListToArray(
+             $this->repo->getAll([], $limit, $offset)
+        );
+       
     }
 
 public function randomCatalogArray(): array
@@ -263,5 +267,13 @@ public function randomCatalogArray(): array
     public function singleItemArray($id)
     {
         return $this->repo->getSingleItem($id);
+    }
+
+    private function catalogListToArray(array $catalogItems): array
+{
+        return array_map(
+            fn($item)=> $item instanceof Catalog ? $item->toArray() : $item,
+            $catalogItems
+        );
     }
 }
