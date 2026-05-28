@@ -11,4 +11,6 @@ interface CatalogInterface extends BaseInterface
 {
     // Get random catalog items
     public function getRandomCatalog();
+
+   public function getSingleItem(int $id);
 }

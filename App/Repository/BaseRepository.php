@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Contract\BaseInterface;
 use BadMethodCallException;
 use PDO;
+use PDOStatement;
 
 abstract class BaseRepository implements BaseInterface
 {
@@ -17,6 +18,13 @@ abstract class BaseRepository implements BaseInterface
         $this->db = $db;
         $this->table = $table;
         $this->primaryKey = $primaryKey;
+    }
+
+    protected function execute(string $sql, array $params = []): PDOStatement
+    {
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        return $stmt;
     }
 
     protected function quoteIdentifier(string $identifier): string

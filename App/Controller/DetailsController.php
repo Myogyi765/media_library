@@ -33,7 +33,7 @@ class DetailsController
         // Get item data from service
         $item = $this->catalogService->singleItemArray($id);
 
-        // Redirect if item does not exist
+ 
         if (empty($item)) {
             header('Location: ' . BASE_URL . '/Public/index.php?page=catalog');
             exit;

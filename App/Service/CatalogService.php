@@ -253,13 +253,15 @@ class CatalogService
         return $this->repo->getAll([], $limit, $offset);
     }
 
-    public function randomCatalogArray()
-    {
-        return $this->repo->getRandomCatalog();
-    }
+public function randomCatalogArray(): array
+{
+    $items = $this->repo->getRandomCatalog();
+
+    return $items;
+}
 
     public function singleItemArray($id)
     {
-        return $this->repo->read($id);
+        return $this->repo->getSingleItem($id);
     }
 }

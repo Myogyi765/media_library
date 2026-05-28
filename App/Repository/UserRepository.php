@@ -26,4 +26,43 @@ class UserRepository extends BaseRepository implements UserInterface
         $stmt->execute(['email' => $email]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+
+    public function usernameExists(string $username): bool
+{
+    $sql = "SELECT user_id FROM users WHERE username = :username LIMIT 1";
+
+    $stmt = $this->db->prepare($sql);
+
+    $stmt->execute([
+        'username' => $username
+    ]);
+
+    return (bool) $stmt->fetch();
+}
+   
+    public function emailExists(string $email): bool
+{
+    $sql = "SELECT user_id FROM users WHERE email = :email LIMIT 1";
+
+    $stmt = $this->db->prepare($sql);
+
+    $stmt->execute([
+        'email' => $email
+    ]);
+
+    return (bool) $stmt->fetch();
+}
+
+    public function create(array $data): bool
+    {
+        $sql = "INSERT INTO users (username, email, password) VALUES (:username, :email, :password)";
+
+        $stmt = $this->db->prepare($sql);
+
+        return $stmt->execute([
+            'username' => $data['username'],
+            'email' => $data['email'],
+            'password' => password_hash($data['password'], PASSWORD_DEFAULT)
+        ]);
+    }
 }

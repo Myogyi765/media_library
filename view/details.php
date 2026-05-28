@@ -2,7 +2,8 @@
 
 require BASE_PATH . '/view/Layout/header.php';
 ?>
-<?php if (empty($item) || !is_array($item)): ?>
+<?php if (empty($item) || !is_array($item)):
+    ?>
     <?php header('Location: ' . BASE_URL . '/Public/index.php?page=catalog');
     exit; ?>
 <?php endif; ?>
@@ -11,13 +12,13 @@ require BASE_PATH . '/view/Layout/header.php';
         
 <?php require BASE_PATH . '/view/partials/breadcrumbs.php'; ?>
         <div class="media-container">
-
-            <div class="media-picture">
+<div class="media-picture">
             <img
                 src="<?= BASE_URL . '/' . htmlspecialchars($item['img']); ?>"
                 alt="<?= htmlspecialchars($item['title']); ?>"
             />
         </div>
+      
             <div class="media-details">
                 <h1><?= htmlspecialchars($item['title']); ?></h1>
 
@@ -27,10 +28,12 @@ require BASE_PATH . '/view/Layout/header.php';
                     <tr><th>Format</th><td><?= htmlspecialchars($item['format']); ?></td></tr>
                     <tr><th>Year</th><td><?= htmlspecialchars($item['year']); ?></td></tr>
 
+                  
                     <?php if (strtolower($item['category']) === 'books'): ?>
                         <tr><th>Authors</th><td><?= implode(', ', $item['author'] ?? []); ?></td></tr>
-                        <tr><th>Publisher</th><td><?= htmlspecialchars($item['publisher']); ?></td></tr>
-                        <tr><th>ISBN</th><td><?= htmlspecialchars($item['isbn']); ?></td></tr>
+                        <tr><th>Publisher</th><td><?= htmlspecialchars($item
+                        ['publisher']??[]); ?></td></tr>
+                        <tr><th>ISBN</th><td><?= htmlspecialchars($item['isbn']??[]); ?></td></tr>
 
                     <?php elseif (strtolower($item['category']) === 'movies'): ?>
                         <tr><th>Director</th><td><?= implode(', ', $item['director'] ?? []); ?></td></tr>

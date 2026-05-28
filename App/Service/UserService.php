@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Contract\UserInterface;
+use App\Model\User;
 
 class UserService
 {
@@ -42,39 +43,16 @@ class UserService
         // $confirmPassword = $data['confirm_password'] ?? '';
 
         $errors = [];
-
-        if ($username === '') {
-            $errors['username'][] = 'Username is required.';
-        } elseif (strlen($username) < 3) {
-            $errors['username'][] = 'Username must be at least 3 characters.';
+        
+       if ($this->repo->usernameExists($data['username'])) {
+            $errors['username'][] = 'Username already exists.';
         }
 
-        if ($email === '') {
-            $errors['email'][] = 'Email is required.';
-        } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            $errors['email'][] = 'Email is not valid.';
+        // Check email exists
+        if ($this->repo->emailExists($data['email'])) {
+            $errors['email'][] = 'Email already exists.';
         }
-
-        if ($password === '') {
-            $errors['password'][] = 'Password is required.';
-        } elseif (strlen($password) < 6) {
-            $errors['password'][] = 'Password must be at least 6 characters.';
-        }
-
-        if (($data['confirm_password'] ?? '') === '') {
-            $errors['confirm_password'][] = 'Confirm Password is required.';
-        } elseif ($password !== $data['confirm_password']) {
-            $errors['confirm_password'][] = 'Passwords do not match.';
-        }
-
-        if (!empty($username) && !empty($this->repo->findByUsername($username))) {
-            $errors['username'][] = 'Username is already taken.';
-        }
-
-        if (!empty($email) && !empty($this->repo->findByEmail($email))) {
-            $errors['email'][] = 'Email is already registered.';
-        }
-
+        
         if (!empty($errors)) {
             return [
                 'success' => false,
@@ -82,12 +60,15 @@ class UserService
             ];
         }
 
-        $this->repo->create([
-            'username' => $username,
-            'email' => $email,
-            'password' => password_hash($password, PASSWORD_DEFAULT)
-        ]);
+      
+    $user = new User(
+        $username,
+        $email,
+        password_hash($password, PASSWORD_DEFAULT)
+    );
 
+    $this->repo->create($user->toArray());
+    
         return [
             'success' => true,
             'errors' => []

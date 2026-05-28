@@ -1,8 +1,8 @@
 <?php
 
 namespace App\Request;
-
-class RegisterUserRequest
+use App\Validate\Validator;
+class RegisterUserRequest extends Validator
 {
     public function rules(): array
     {
@@ -29,5 +29,12 @@ class RegisterUserRequest
                 'match' => 'password',
             ],
         ];
+
+    }
+
+    
+           public function validateRequest(array $data): array
+    {
+        return $this->validate($data, $this->rules());
     }
 }

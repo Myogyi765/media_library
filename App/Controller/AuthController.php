@@ -3,13 +3,15 @@
 namespace App\Controller;
 
 use App\Service\UserService;
-
+use App\Request\LoginRequest;
+use App\Request\RegisterUserRequest;
 class AuthController
 {
     private UserService $userService;
 
     public function __construct(UserService $userService)
     {
+    
         $this->userService = $userService;
     }
 
@@ -24,19 +26,15 @@ class AuthController
          $errors = [];
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $usernameOrEmail = trim($_POST['username_or_email'] ?? '');
-            $password = $_POST['password'] ?? '';
-
-            if ($usernameOrEmail === '') {
-                $errors['username_or_email'][] = 'Username or Email is required.';
-            }
-
-            if ($password === '') {
-                $errors['password'][] = 'Password is required.';
-            }
+            $loginRequest = new LoginRequest();
+            $errors = $loginRequest->validateRequest($_POST);
 
             if (empty($errors)) {
-                $user = $this->userService->authenticate($usernameOrEmail, $password);
+
+              $usernameOrEmail = trim($_POST['username_or_email'] ?? '');
+            $password = $_POST['password'] ?? '';
+
+                $user = $this->userService->authenticate($errors['username_or_email'] ?? '', $errors['password'] ?? '');
 
                 if ($user !== null) {
                     $_SESSION['user'] = $user;
@@ -64,31 +62,27 @@ class AuthController
         $errors = [];
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $username = trim($_POST['username'] ?? '');
-            $email = trim($_POST['email'] ?? '');
-            $password = $_POST['password'] ?? '';
-            $confirmPassword = $_POST['confirm_password'] ?? '';
 
-            // if ($password !== $confirmPassword) {
-            //     $errors[] = 'Passwords do not match.';
-            // }
+         $registerRequest = new RegisterUserRequest();
+            $errors = $registerRequest->validateRequest($_POST);
 
-            if (empty($errors)) {
-                $result = $this->userService->register([
-                    'username' => $username,
-                    'email' => $email,
-                    'password' => $password,
-                    'confirm_password' => $confirmPassword
-                ]);
+    
+       
 
-                if ($result['success']) {
+        $result = $this->userService->register([
+            'username' => trim($_POST['username']),
+            'email' => trim($_POST['email']),
+            'password' => $_POST['password'],
+            'confirm_password' => $_POST['confirm_password']
+        ]);
+                if ($result['success'] && empty($result['errors'])) {
                      $_SESSION['success'] = 'Your account has been created. You may now log in.';
                     $username = '';
                     $email = '';
                 } else {
-                    $errors = array_merge($errors, $result['errors']);
+                    $errors = array_merge_recursive($errors, $result['errors']);
                 }
-            }
+            
         }
 
         require BASE_PATH . '/view/register.php';

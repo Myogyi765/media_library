@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Validation;
+namespace App\Validate;
 
 class Validator
 {
@@ -27,6 +27,12 @@ class Validator
 
             if (($fieldRules['email'] ?? false) && !filter_var($value, FILTER_VALIDATE_EMAIL)) {
                 $errors[$field][] = "$field must be valid email";
+            }
+
+
+
+            if (isset($fieldRules['match']) && $value !== ($data[$fieldRules['match']] ?? null)) {
+                $errors[$field][] = "$field must match {$fieldRules['match']}";
             }
         }
 

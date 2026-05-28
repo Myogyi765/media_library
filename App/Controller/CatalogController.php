@@ -23,7 +23,10 @@ class CatalogController
 
         $random = $this->catalogService->randomCatalogArray();
 
+         
+         
         require BASE_PATH . '/view/home.php';
+       
     }
 
     /**
